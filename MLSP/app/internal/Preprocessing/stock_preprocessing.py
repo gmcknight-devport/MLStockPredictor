@@ -1,0 +1,64 @@
+from fastapi import HTTPException
+from typing import Optional
+from sklearn.preprocessing import MinMaxScaler
+
+import yfinance as yf
+import datetime as date
+import numpy as np
+
+
+# Return raw data for ticker between specified dates
+def get_ticker_data(ticker: str, date_start: date, date_end: date):
+    yf_ticker = yf.Ticker(ticker)
+    df = yf_ticker.history(start=date_start, end=date_end, interval="1d")
+
+    if df.empty:
+        raise HTTPException(status_code=404, detail="Couldn't get data, check ticker is correct")
+    else:
+        return df
+
+
+# Return preprocessed data for ticker between specified dates
+# Reshapes, scales, and splits data into train and test
+def get_processed_ticker_data(ticker: str, date_start: date, date_end: date, train_percentage: Optional[float] = 0.8,
+                              time_step: Optional[int] = None):
+
+    # Get ticker data
+    df = get_ticker_data(ticker, date_start, date_end)
+
+    # Select close column and reshape
+    data = df.loc[:, ['Close']]
+
+    # normalize the dataset
+    scale = MinMaxScaler(feature_range=(0, 1))
+    data_sc = scale.fit_transform(data)
+
+    # split into train and test
+    train_size = int(len(data_sc) * train_percentage)
+    test_size = len(data_sc) - train_size
+    train, test = data_sc[0:train_size, :], data_sc[train_size:len(data), :]
+
+    # split into x and y
+    if time_step is None:
+        delta = date_start - date_end
+        time_step = delta.days * .1
+
+    train_x, train_y = __split_x_y(train, time_step)
+    test_x, test_y = __split_x_y(test, time_step)
+
+    # reshape x
+    train_x = np.reshape(train_x, (train_x.shape[0], 1, train_x.shape[1]))
+    test_x = np.reshape(test_x, (test_x.shape[0], 1, test_x.shape[1]))
+
+    return train_x, train_y, test_x, test_y
+
+
+# Split dataset by time step
+def __split_x_y(dataset, timestep):
+    x, y = [], []
+    for i in range(len(dataset) - timestep - 1):
+        x.append(dataset[i:(i + timestep), 0])
+        y.append(dataset[i + timestep, 0])
+    return np.array(x), np.array(y)
+
+# Don't forget testing!!!
