@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 
+from .routers.preprocessing import stock_preprocessing
+
 app = FastAPI()
 
-
-@app.get("/")
-def home():
-    return{"Data": "Home test"}
+app.include_router(stock_preprocessing.router)

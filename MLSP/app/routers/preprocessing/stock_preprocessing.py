@@ -1,13 +1,19 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 from typing import Optional
 from sklearn.preprocessing import MinMaxScaler
 
 import yfinance as yf
-import datetime as date
+from datetime import date as date
 import numpy as np
+
+router = APIRouter(
+    prefix="/preprocessing",
+    responses={404: {"Description": "Couldn't get data, check ticker is correct"}}
+)
 
 
 # Return raw data for ticker between specified dates
+@router.get("/{ticker}")
 def get_ticker_data(ticker: str, date_start: date, date_end: date):
     yf_ticker = yf.Ticker(ticker)
     df = yf_ticker.history(start=date_start, end=date_end, interval="1d")
@@ -20,6 +26,7 @@ def get_ticker_data(ticker: str, date_start: date, date_end: date):
 
 # Return preprocessed data for ticker between specified dates
 # Reshapes, scales, and splits data into train and test
+@router.get("/process/{ticker}")
 def get_processed_ticker_data(ticker: str, date_start: date, date_end: date, train_percentage: Optional[float] = 0.8,
                               time_step: Optional[int] = None):
 
@@ -40,8 +47,8 @@ def get_processed_ticker_data(ticker: str, date_start: date, date_end: date, tra
 
     # split into x and y
     if time_step is None:
-        delta = date_start - date_end
-        time_step = delta.days * .1
+        delta = date_end - date_start
+        time_step = round(delta.days * .1)
 
     train_x, train_y = __split_x_y(train, time_step)
     test_x, test_y = __split_x_y(test, time_step)
@@ -50,7 +57,7 @@ def get_processed_ticker_data(ticker: str, date_start: date, date_end: date, tra
     train_x = np.reshape(train_x, (train_x.shape[0], 1, train_x.shape[1]))
     test_x = np.reshape(test_x, (test_x.shape[0], 1, test_x.shape[1]))
 
-    return train_x, train_y, test_x, test_y
+    return train_x.tolist(), train_y.tolist(), test_x.tolist(), test_y.tolist()
 
 
 # Split dataset by time step
@@ -60,5 +67,3 @@ def __split_x_y(dataset, timestep):
         x.append(dataset[i:(i + timestep), 0])
         y.append(dataset[i + timestep, 0])
     return np.array(x), np.array(y)
-
-# Don't forget testing!!!
