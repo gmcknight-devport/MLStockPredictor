@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from .routers.preprocessing import stock_preprocessing
+from MLSP.app.routers import keras_router
 
 app = FastAPI()
 
-app.include_router(stock_preprocessing.router)
+app.include_router(keras_router.router)
