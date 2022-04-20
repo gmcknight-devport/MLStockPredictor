@@ -44,7 +44,7 @@ def get_processed_ticker_data(ticker: str, date_start: date, date_end: date, tra
     train_size = int(len(data_sc) * train_percentage)
     test_size = len(data_sc) - train_size
 
-    # Test set taken from beginning
+    # Split into train and test
     train, test = data_sc[0:train_size, :], data_sc[train_size:len(data_sc), :]
 
     # Ensure time step is set
