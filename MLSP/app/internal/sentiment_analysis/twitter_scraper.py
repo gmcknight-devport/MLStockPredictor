@@ -15,10 +15,6 @@ def scrape_hashtag(hashtag: str, date_start: Optional[date] = date.today() - tim
     # Number to scrape
     number_tweets = 50
 
-    # Check for hashtag and add if needed
-    if not hashtag.startswith("#"):
-        hashtag = "#" + hashtag
-
     # Complete search string
     search_str = hashtag + " since:" + date_start.strftime("%Y-%m-%d") + " until:" + date_end.strftime("%Y-%m-%d")
 

@@ -11,14 +11,15 @@ def scrape_finviz(ticker: str):
 
     # Check ticker exists
     t = yf.Ticker(ticker)
-    if t.info is None:
-        raise HTTPException(status_code=404, detail="Ticker couldn't be found")
 
     # Get short name from ticker and remove unnecessary parts
-    stock_name = t.info['shortName']
-    first_split = stock_name.split(' ')
-    stock_name = first_split[0].split('.')
-    short_name = stock_name[0]
+    try:
+        stock_name = t.info['shortName']
+        first_split = stock_name.split(' ')
+        stock_name = first_split[0].split('.')
+        short_name = stock_name[0]
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Ticker couldn't be found")
 
     # Create url to search with from ticker
     complete_url = finviz_url + ticker

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Optional
 
-from MLSP.app.internal.Metrics import RegressionAccuracy
+from MLSP.app.internal.metrics import RegressionAccuracy
 from MLSP.app.internal.keras_predictor.keras_model import ModelOptions, create_model
 from MLSP.app.internal.preprocessing.stock_preprocessing import get_processed_ticker_data, Ticker
 
