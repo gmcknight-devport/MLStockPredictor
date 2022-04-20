@@ -1,11 +1,24 @@
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
+import yfinance as yf
+from fastapi import HTTPException
 
 finviz_url = "https://finviz.com/quote.ashx?t="
 
 
-def scrape_finviz(ticker):
+def scrape_finviz(ticker: str):
     processed_data = []
+
+    # Check ticker exists
+    t = yf.Ticker(ticker)
+    if t.info is None:
+        raise HTTPException(status_code=404, detail="Ticker couldn't be found")
+
+    # Get short name from ticker and remove unnecessary parts
+    stock_name = t.info['shortName']
+    first_split = stock_name.split(' ')
+    stock_name = first_split[0].split('.')
+    short_name = stock_name[0]
 
     # Create url to search with from ticker
     complete_url = finviz_url + ticker
@@ -23,9 +36,13 @@ def scrape_finviz(ticker):
         title = row.a.text
         timestamp_data = row.td.text.split(' ')
 
-        if len(timestamp_data) == 1:
-            time = timestamp_data[0]
-        else:
+        # Get date for each title
+        if not len(timestamp_data) == 1:
             date = timestamp_data[0]
-            time = timestamp_data[1]
-        processed_data.append([date, time, title])
+
+        # Check title is relevant to ticker - contains stock name or ticker
+        title_str = str(title)
+        if ticker in title_str or short_name in title_str:
+            processed_data.append([date, title])
+
+    return processed_data
