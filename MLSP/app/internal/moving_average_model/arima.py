@@ -6,7 +6,7 @@ from MLSP.app.internal.preprocessing.stock_preprocessing import Ticker, get_tick
 
 
 # Create an arima model for specified ticker to predict future values
-def arima_model(ticker: Ticker, train_percentage: Optional[float] = 0.8):
+def create_model(ticker: Ticker, train_percentage: Optional[float] = 0.8):
     df = get_ticker_data(ticker.ticker, ticker.date_start, ticker.date_end)
 
     # Select close column and reshape
@@ -20,7 +20,7 @@ def arima_model(ticker: Ticker, train_percentage: Optional[float] = 0.8):
     model = pm.auto_arima(train, error_action='ignore', trace=True, suppress_warnings=True, maxiter=10, seasonal=False)
 
     # Store summary of model
-    summary = model.summary()
+    summary = model.summary().as_text()
 
     # Predict values
     prediction_days = 10
