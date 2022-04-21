@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'mlsp'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DAD03DA32AFA4B8D81B209D5850ED070 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_69CD335C931E4E00A0379DC2574C7578 }}
