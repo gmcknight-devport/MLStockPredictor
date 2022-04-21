@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from deta import Deta
 
 from MLSP.app.routers import sentiment_router, ma_router
 from MLSP.app.routers import keras_router
@@ -20,8 +19,6 @@ of shares - consider the effect Elon Musk's tweets have on cryptocurrency purcha
 High volume and short time scale investing can be aided with current computing capabilities but the long term is best 
 avoided with these tools. 
 """
-
-deta = Deta()
 app = FastAPI(title="Machine Learning Stock Predictor", description=description)
 
 app.include_router(keras_router.router)
