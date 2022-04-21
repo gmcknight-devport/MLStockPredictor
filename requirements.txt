@@ -10,4 +10,4 @@ snscrape~=0.4.3.20220106
 bs4~=0.0.1
 beautifulsoup4~=4.9.3
 pmdarima~=1.8.2
-tweet-preprocessor~=0.6.0
+pandas~=1.2.4
