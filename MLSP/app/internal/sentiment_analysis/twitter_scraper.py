@@ -1,7 +1,6 @@
 from datetime import date as date, timedelta
 from typing import Optional
 import re
-from preprocessor import preprocess as p
 
 import snscrape.modules.twitter as scraper
 from fastapi import HTTPException
