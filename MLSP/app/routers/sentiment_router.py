@@ -36,8 +36,8 @@ def financial_news_sentiment(ticker: str):
 
 
 @router.get('/combined')
-def combined_sentiment(hashtag: str, date_start: Optional[date], date_end: Optional[date]):
-    twitter_compound_scores, twitter_score_per_date = twitter_sentiment()
-    finance_compound_scores, finance_score_per_date = financial_news_sentiment()
+def combined_sentiment(ticker: str, date_start: Optional[date], date_end: Optional[date]):
+    twitter_compound_scores, twitter_score_per_date = twitter_sentiment(ticker, date_start, date_end)
+    finance_compound_scores, finance_score_per_date = financial_news_sentiment(ticker)
 
     return twitter_compound_scores, twitter_score_per_date, finance_compound_scores, finance_score_per_date

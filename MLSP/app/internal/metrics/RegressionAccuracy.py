@@ -25,7 +25,11 @@ def __calc_mape(prediction, original):
 
 def __corr_acc_fore(prediction, original):
     corr_act_fore = np.corrcoef(prediction, original)
-    return corr_act_fore
+    if np.isnan(corr_act_fore).any():
+        return 0
+    else:
+        return corr_act_fore
+    # return corr_act_fore
 
 
 def __calc_min_max(prediction, original):
