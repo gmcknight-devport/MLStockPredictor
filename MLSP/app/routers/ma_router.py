@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import date, timedelta
 
 from fastapi import APIRouter
 
@@ -13,10 +14,14 @@ router = APIRouter(
 
 @router.post('/arima')
 def arima_model(ticker: Ticker, train_percentage: Optional[float] = 0.8):
+
+    # Ensure enough days for model to run properly
+    if ticker.date_end - ticker.date_start < timedelta(days=7):
+        ticker.date_start -= timedelta(days=7)
+
     predictions, summary = create_model(ticker, train_percentage)
 
     # Prepare output for JSON encoding
     predictions = dict(enumerate(predictions.flatten(), 1))
 
-    print(type(predictions), type(summary))
     return predictions, summary

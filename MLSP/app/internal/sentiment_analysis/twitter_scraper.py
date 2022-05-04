@@ -5,13 +5,13 @@ import re
 import snscrape.modules.twitter as scraper
 from fastapi import HTTPException
 
-scraped_tweets = []
-
 
 # Scrape tweets for a day by default
 # Scrape for a few days - day at a time
 def scrape_hashtag(hashtag: str, date_start: Optional[date] = date.today() - timedelta(days=1),
                    date_end: Optional[date] = date.today()):
+    scraped_tweets = []
+
     # Number to scrape
     number_tweets = 50
 

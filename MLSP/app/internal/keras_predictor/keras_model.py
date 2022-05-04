@@ -7,6 +7,11 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 
+models = {"LSTM": LSTM, "SimpleRNN": SimpleRNN, "Bidirectional": Bidirectional, "Conv1D": Conv1D, "GRU": GRU}
+activation_functions = {"relu": relu, "sigmoid": sigmoid, "tanh": tanh, "softmax": softmax, "elu": elu,
+                        "softsign": softsign, "softplus": softplus, "exponential": exponential}
+
+
 class ModelOptions(BaseModel):
     iterations: Optional[int] = 1
     epochs: Optional[int] = 20
@@ -19,6 +24,12 @@ class ModelOptions(BaseModel):
 
 def create_model(model_name: type, model_options: ModelOptions, input_shape: object, activation_function: type,
                  scale: MinMaxScaler, train_x: np.ndarray, train_y: np.ndarray, test_x: np.ndarray, test_y: np.ndarray):
+
+    # Check activation function exists in array:
+    if activation_function not in activation_functions.keys():
+        activation_function = activation_functions.get("tanh")
+    else:
+        activation_function = activation_functions.get(activation_function)
 
     # Create sequential model
     model = Sequential()
@@ -35,7 +46,7 @@ def create_model(model_name: type, model_options: ModelOptions, input_shape: obj
         model.add(Dropout(model_options.dropout))
 
     # Add last layer of model with dropout and dense
-    model.add(LSTM(model_options.num_inputs, input_shape=input_shape, activation=activation_function))
+    model.add(model_name(model_options.num_inputs, input_shape=input_shape, activation=activation_function))
     model.add(Dropout(0.1))
     model.add(Dense(1, activation=activation_function))
 
