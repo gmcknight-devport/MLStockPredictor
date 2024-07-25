@@ -22,7 +22,7 @@ class ModelOptions(BaseModel):
     loss: Optional[str] = "mse"
 
 
-def create_model(model_name: type, model_options: ModelOptions, input_shape: object, activation_function: type,
+def create_model(model_name: type, keras_model_options: ModelOptions, input_shape: object, activation_function: type,
                  scale: MinMaxScaler, train_x: np.ndarray, train_y: np.ndarray, test_x: np.ndarray, test_y: np.ndarray):
 
     # Check activation function exists in array:
@@ -35,29 +35,29 @@ def create_model(model_name: type, model_options: ModelOptions, input_shape: obj
     model = Sequential()
 
     # Set batch size if it's None
-    if model_options.batch_size is None:
-        model_options.batch_size = len(train_x[0]) * 0.025
-        model_options.batch_size = round(model_options.batch_size)
+    if keras_model_options.batch_size is None:
+        keras_model_options.batch_size = len(train_x[0]) * 0.025
+        keras_model_options.batch_size = round(keras_model_options.batch_size)
 
     # loop iterations 1 less than parameter to include return_sequences
-    for i in range(model_options.iterations - 1):
-        model.add(model_name(model_options.num_inputs, input_shape=input_shape, activation=activation_function,
+    for i in range(keras_model_options.iterations - 1):
+        model.add(model_name(keras_model_options.num_inputs, input_shape=input_shape, activation=activation_function,
                              return_sequences=True))
-        model.add(Dropout(model_options.dropout))
+        model.add(Dropout(keras_model_options.dropout))
 
     # Add last layer of model with dropout and dense
-    model.add(model_name(model_options.num_inputs, input_shape=input_shape, activation=activation_function))
+    model.add(model_name(keras_model_options.num_inputs, input_shape=input_shape, activation=activation_function))
     model.add(Dropout(0.1))
     model.add(Dense(1, activation=activation_function))
 
     # Compile model
     model.compile(
-        optimizer=model_options.optimiser,
-        loss=model_options.loss,
+        optimizer=keras_model_options.optimiser,
+        loss=keras_model_options.loss,
         metrics=['accuracy'])
 
     # Fit model
-    model.fit(train_x, train_y, epochs=model_options.epochs, batch_size=model_options.batch_size, verbose=1)
+    model.fit(train_x, train_y, epochs=keras_model_options.epochs, batch_size=keras_model_options.batch_size, verbose=1)
 
     # Convert values to float from numpy.int32
     test_x = test_x.astype(float)

@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 @router.post("/")
-def predict_stock(ticker: Ticker, model_options: ModelOptions, model_name: Optional[str] = "LSTM",
+def predict_stock(ticker: Ticker, keras_model_options: ModelOptions, model_name: Optional[str] = "LSTM",
                   activation: Optional[str] = "tanh", train_percentage: Optional[float] = 0.8,
                   time_step: Optional[int] = None):
 
@@ -24,7 +24,7 @@ def predict_stock(ticker: Ticker, model_options: ModelOptions, model_name: Optio
         model_name = models.get(model_name)
 
     # If number if iterations is invalid (not between 1 and 10) raise exception
-    if not 1 <= model_options.iterations <= 10:
+    if not 1 <= keras_model_options.iterations <= 10:
         raise HTTPException(status_code=400, detail="Enter number of iterations between 1 and 10")
 
     # Preprocessing
@@ -34,7 +34,7 @@ def predict_stock(ticker: Ticker, model_options: ModelOptions, model_name: Optio
 
     # Set input shape and call Keras model
     input_shape = (time_step, 1)
-    test_predictions, test_y, future_predictions = create_model(model_name, model_options, input_shape, activation,
+    test_predictions, test_y, future_predictions = create_model(model_name, keras_model_options, input_shape, activation,
                                                                 scale, train_x, train_y, test_x, test_y)
 
     # calculate accuracy

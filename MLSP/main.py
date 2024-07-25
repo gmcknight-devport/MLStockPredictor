@@ -24,3 +24,7 @@ app = FastAPI(title="Machine Learning Stock Predictor", description=description)
 app.include_router(keras_router.router)
 app.include_router(sentiment_router.router)
 app.include_router(ma_router.router)
+
+import uvicorn
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8080)
