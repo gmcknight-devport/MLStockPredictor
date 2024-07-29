@@ -22,6 +22,6 @@ def arima_model(ticker: Ticker, train_percentage: Optional[float] = 0.8):
     predictions, summary = create_model(ticker, train_percentage)
 
     # Prepare output for JSON encoding
-    predictions = dict(enumerate(predictions.flatten(), 1))
+    predictions = dict(enumerate(predictions.to_numpy().flatten(), 1))
 
     return predictions, summary
